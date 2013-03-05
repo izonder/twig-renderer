@@ -223,6 +223,7 @@ class ETwigViewRenderer extends CApplicationComponent implements IViewRenderer
     private function _addCustom($classType, $elements)
     {
         $classFunction = 'Twig_'.$classType.'_Function';
+        $simpleClass = 'Twig_Simple'.$classType;
 
         foreach ($elements as $name => $func) {
             $twigElement = null;
@@ -236,10 +237,15 @@ class ETwigViewRenderer extends CApplicationComponent implements IViewRenderer
                 case is_array($func) && is_string($func[0]) && isset($func[1]) && is_array($func[1]):
                     $twigElement = new $classFunction($func[0], $func[1]);
                 break;
+                // Callback given
+                case is_callable($func):
+                    $twigElement = new $simpleClass($name, $func);
+                break;
             }
 
             if ($twigElement !== null) {
-                $this->_twig->{'add'.$classType}($name, $twigElement);
+                if($twigElement instanceof Twig_SimpleFunction || $twigElement instanceof Twig_SimpleFilter) $this->_twig->{'add'.$classType}($twigElement);
+                else $this->_twig->{'add'.$classType}($name, $twigElement);
             } else {
                 throw new CException(Yii::t('yiiext',
                                              'Incorrect options for "{classType}" [{name}]',
