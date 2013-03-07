@@ -1,4 +1,4 @@
-Twig view renderer
+﻿Twig view renderer
 ==================
 
 This extension allows you to use [Twig](http://twig.sensiolabs.org) templates in Yii.
@@ -69,4 +69,28 @@ This extension allows you to use [Twig](http://twig.sensiolabs.org) templates in
         ]
     }, true) }}
 </div><!-- mainmenu -->
+```
+
+###Callbacks usage example
+```php
+'viewRenderer' => array(
+    'class' => 'ext.ETwigViewRenderer',
+    'filters' => array(
+        't' => function($message, $options = array(), $category = 'app'){
+            return Yii::t($category, $message, $options); //change places of arguments
+        }
+    ),
+    'functions' => array(
+        'route' => function($route) { 
+            return Yii::app()->urlManager->createUrl($route); //use non-static methods
+        }
+    )
+),
+```
+
+Than you can do that:
+
+```html
+<h1>{{ 'Hello, world!'|t }}</h1>
+<a href="{{ route('site/index') }}">{{ 'Home'|t }}</a>
 ```
