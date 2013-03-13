@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Twig view renderer
  *
@@ -96,6 +96,9 @@ class ETwigViewRenderer extends CApplicationComponent implements IViewRenderer
 
         // Adding Yii::app() object to globals
         $this->_twig->addGlobal('App', $app);
+	
+        //Adding PHP-global functions
+        $this->_twig->addGlobal('php', new ETwigViewRendererPhpGlobal());
 
         // Adding Yii's core static classes proxy as 'C' shortcut (usage: {{C.Html.tag(...)}})
         $this->_twig->addGlobal('C', new ETwigViewRendererYiiCoreStaticClassesProxy());
@@ -326,4 +329,18 @@ class ETwigViewRendererYiiCoreStaticClassesProxy
 function ETwigViewRendererVoidFunction($argument)
 {
     return '';
+}
+
+/**
+ * Class-wrapper of PHP-global functions
+ * 
+ * @author Dmitry Morgachev <izonder@gmail.com>
+ * @version 1.0.0
+ */
+class ETwigViewRendererPhpGlobal
+{
+    function __call($func, $args=array())
+    {
+        return call_user_func_array($func, $args);
+    }
 }
